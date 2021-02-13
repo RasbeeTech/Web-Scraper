@@ -16,7 +16,7 @@ products=[] #List to store name of the product
 prices=[] #List to store price of the product
 ratings=[] #List to store rating of the product
 
-driver.get("https://codedamn-classrooms.github.io/webscraper-python-codedamn-classroom-website/")
+driver.get("https://webscraper.io/test-sites/e-commerce/allinone")
 
 content = driver.page_source
 soup = BeautifulSoup(content, 'html.parser')
@@ -64,6 +64,7 @@ for ahref in links:
 all_products = []
 
 # Extract and store in top_items according to instructions on the left
+
 products = soup.select('div.thumbnail')
 for product in products:
     name = product.select('h4 > a')[0].text.strip()
@@ -81,7 +82,7 @@ for product in products:
     })
 
 
-keys = all_products[2].keys()
+keys = all_products[0].keys()
 
 with open('products.csv', 'w', newline='') as output_file:
     dict_writer = csv.DictWriter(output_file, keys)
