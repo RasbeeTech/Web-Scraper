@@ -104,8 +104,6 @@ def save_product_csv(all_products):
 
 
 if __name__ == "__main__":
-    # TODO: learn how to use 'class' vs 'def' in python
-    # TODO: make program able to access different ecommerce sites: https://webscraper.io/test-sites
     print("WebScraper.py\n")
 
     url_home = 'https://webscraper.io/test-sites/e-commerce/allinone'
