@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import time
 import csv
+import threading
 
 chrome_options = Options()
 chrome_options.add_argument("--headless")
@@ -21,8 +22,8 @@ def get_content(webpage="https://webscraper.io/test-sites/e-commerce/allinone"):
     body = soup.body.text
     head = soup.head.text
 
-    #print(head, title, body)
-    #print(head.strip())
+    # print(head, title, body)
+    # print(head.strip())
     return soup
 
 
@@ -120,6 +121,7 @@ if __name__ == "__main__":
             url_phones,
             url_phones_touch]
 
+    start_time = time.time()
     for url in urls:
         html = get_content(url)
         element_tags = get_all_tags(html, "h1.page-header")
@@ -130,5 +132,9 @@ if __name__ == "__main__":
         products = get_all_products(html)
         for product in products:
             print(product)
+
+    end_time = time.time()
+    print("total time: %s" % (end_time - start_time))
+
 
     driver.quit()
