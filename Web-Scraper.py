@@ -73,8 +73,6 @@ def get_links(content):
 def get_all_products(content, content_container='div.thumbnail'):
     all_products = []
 
-    # Extract and store in top_items according to instructions on the left
-
     products = content.select(content_container)
     for product in products:
         name = product.select('h4 > a')[0].text.strip()
