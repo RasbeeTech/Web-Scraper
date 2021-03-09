@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 import threading
 import time
 
+all_times = []
+
 
 class Thread(threading.Thread):
     def __init__(self, thread_id, name, url):
@@ -13,14 +15,15 @@ class Thread(threading.Thread):
         self.url = url
 
     def run(self):
-        start_time = time.time()
         print("Starting " + self.name)
 
         scraper = Scraper(url=self.url)
+        start_time = time.time()
         scraper.test()
         scraper.quit()
-
-        print(self.name + " completed in: %s" % (time.time()-start_time))
+        total_time = time.time() - start_time
+        print(self.name + " completed in: %s" % total_time)
+        all_times.append(total_time)
 
 
 class Scraper:
@@ -119,3 +122,14 @@ thread3.start()
 thread4.start()
 thread5.start()
 thread6.start()
+
+thread1.join()
+thread2.join()
+thread3.join()
+thread4.join()
+thread5.join()
+thread6.join()
+
+print("times:", all_times)
+print("sum: ", sum(all_times))
+print("average: ", sum(all_times) / len(all_times))
