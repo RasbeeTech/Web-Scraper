@@ -1,41 +1,16 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
-import threading
 import time
-
-all_times = []
-
-
-class Thread(threading.Thread):
-    def __init__(self, thread_id, name, url):
-        threading.Thread.__init__(self)
-        self.thread_id = thread_id
-        self.name = name
-        self.url = url
-
-    def run(self):
-        print("Starting " + self.name)
-
-        scraper = Scraper(url=self.url)
-        start_time = time.time()
-        scraper.test()
-        scraper.quit()
-        total_time = time.time() - start_time
-        print(self.name + " completed in: %s" % total_time)
-        all_times.append(total_time)
+import csv
 
 
 class Scraper:
     def __init__(self, url):
         self.driver = webdriver.Chrome("./chromedriver", options=self.set_chrome_options())
         self.url = url
-
         self.open_url()
         self.content = self.get_content()
-
-        # self.all_tags = self.get_all_tags(tag="h1")
-        # self.get_items()
 
     def set_chrome_options(self):
         chrome_options = Options()
@@ -51,13 +26,14 @@ class Scraper:
         soup = BeautifulSoup(content, "html.parser")
         return soup
 
+    # retrieves all elements with a chosen html tag
     def get_all_tags(self, tag="h1"):
         all_tags = []
         for element in self.content.select(tag):
             all_tags.append(element.text.strip())
 
         return all_tags
-
+    
     def get_items(self, product_container='div.thumbnail'):
         top_items = []
 
@@ -99,37 +75,32 @@ class Scraper:
     def quit(self):
         self.driver.quit()
 
-    def test(self):
-        element_tags = self.get_all_tags()
-        for element_tag in element_tags:
-            print(element_tag)
+    def save_product_csv(self, all_products):
+        keys = all_products[0].keys()
 
-        products = self.get_all_products()
-        for product in products:
-            print(product)
+        with open('products.csv', 'w', newline='') as output_file:
+            dict_writer = csv.DictWriter(output_file, keys)
+            dict_writer.writeheader()
+            dict_writer.writerows(all_products)
 
 
-thread1 = Thread(1, "thread1", "https://webscraper.io/test-sites/e-commerce/allinone")
-thread2 = Thread(2, "thread2", "https://webscraper.io/test-sites/e-commerce/allinone/computers")
-thread3 = Thread(3, "thread3", "https://webscraper.io/test-sites/e-commerce/allinone/computers/laptops")
-thread4 = Thread(4, "thread4", "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets")
-thread5 = Thread(5, "thread5", "https://webscraper.io/test-sites/e-commerce/allinone/phones")
-thread6 = Thread(6, "thread6", "https://webscraper.io/test-sites/e-commerce/allinone/phones/touch")
+if __name__ == "__main__":
+    urls = [
+        "https://webscraper.io/test-sites/e-commerce/allinone",
+        "https://webscraper.io/test-sites/e-commerce/allinone/computers",
+        "https://webscraper.io/test-sites/e-commerce/allinone/computers/laptops",
+        "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
+        "https://webscraper.io/test-sites/e-commerce/allinone/phones",
+        "https://webscraper.io/test-sites/e-commerce/allinone/phones/touch"
+    ]
 
-thread1.start()
-thread2.start()
-thread3.start()
-thread4.start()
-thread5.start()
-thread6.start()
+    start_time = time.time()
 
-thread1.join()
-thread2.join()
-thread3.join()
-thread4.join()
-thread5.join()
-thread6.join()
+    for url in urls:
+        scraper = Scraper(url)
+        print("products:", scraper.get_all_products())
+        scraper.quit()
 
-print("times:", all_times)
-print("sum: ", sum(all_times))
-print("average: ", sum(all_times) / len(all_times))
+    total_time = time.time() - start_time
+
+    print("time:", total_time)
